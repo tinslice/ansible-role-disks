@@ -41,7 +41,7 @@ Create playbook file `playbook.yml`
         mount_options: defaults,nofail # mount options (default 'defaults,nofail') 
   become: yes
     roles:
-      - disks
+      - disk-volume
 ```
 
 Run playbook
