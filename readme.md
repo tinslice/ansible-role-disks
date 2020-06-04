@@ -25,7 +25,7 @@ Create playbook file `playbook.yml`
 - hosts: "{{ target_host }}"
   vars:
     cloud_provider: gcp # cloud provider (defaults to 'gcp'). For now only 'gcp' support is implemented 
-    disk-volume:
+    disk-volumes:
       - name: mydisk                   # disk name
         mount: /mnt/diskmount          # mount location
         state: present                 # disk state                        | possible values: [ 'present', 'absent' ]
