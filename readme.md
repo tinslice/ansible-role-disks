@@ -1,6 +1,6 @@
-# ansible-role-disks
+# ansible-role-disk-volume
 
-Ansible role for managing disks
+Ansible role for managing disk volumes
 
 ## Usage example
 
@@ -8,7 +8,7 @@ Create requirements file `requirements.yml`
 
 ```yml
 ---
-  - name: disks
+  - name: disk-volume
     src: git@github.com:tinslice/ansible-role-disks.git
 ```
 
@@ -25,7 +25,7 @@ Create playbook file `playbook.yml`
 - hosts: "{{ target_host }}"
   vars:
     cloud_provider: gcp # cloud provider (defaults to 'gcp'). For now only 'gcp' support is implemented 
-    disks:
+    disk-volume:
       - name: mydisk                   # disk name
         mount: /mnt/diskmount          # mount location
         state: present                 # disk state                        | possible values: [ 'present', 'absent' ]
