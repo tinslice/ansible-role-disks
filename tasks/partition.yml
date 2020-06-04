@@ -1,0 +1,61 @@
+---
+
+- name: "Partition disks"
+  parted:
+    device: /dev/{{ item.disk }}
+    number: 1
+    flags: "{{ item.flags | default([]) }}"
+    unit: "{{ item.unit | default('KiB') }}"
+    label: "{{ item.partition_table | default('gpt') }}"
+    state: "{{ item.state | default('present') }}"
+  with_items: "{{ local_disks }}"
+  when: 
+    - local_disks is defined
+
+- name: "Create filesystem on the first partition"
+  filesystem:
+    dev: '/dev/{{ item.part | default(item.disk + "1") }}'
+    force: '{{ item.force | default(omit) }}'
+    fstype: '{{ item.fstype | default("ext4") }}'
+    opts: '{{ item.fsopts | default(omit) }}'
+    resizefs: '{{ item.resizefs | default(true) | bool }}'
+  with_items: "{{ local_disks }}"
+  when: 
+    - local_disks is defined
+    - item.state == 'present'
+  tags: ['disk']
+
+- name: "Disable periodic fsck on ext3 or ext4 formatted disks"
+  shell: tune2fs -c0 -i0 {{ item.part | default(item.disk + "1") }}
+  with_items: "{{ local_disks }}"
+  when: 
+    - local_disks is defined
+    - item.state == 'present' 
+    - item.fstype | default("ext4") == 'ext4' or item.fstype == 'ext3'
+    - item.disable_periodic_fsck | default(false) | bool
+  tags: ['disk']
+
+- name: "Ensure the mount directory exists"
+  file:
+    path: '{{ item.mount }}'
+    owner: '{{ item.user | default("root") }}'
+    group: '{{ item.group | default("root") }}'
+    state: directory
+  with_items: "{{ local_disks }}"
+  when:
+    - local_disks is defined
+    - item.state == 'present'
+  tags: ['disk']
+
+- name: "Mount disk"
+  mount:
+    name: '{{ item.mount }}'
+    fstype: '{{ item.fstype | default("ext4") }}'
+    opts: '{{ item.mount_options|default("defaults,nofail") }}'
+    passno: '0'
+    src: '/dev/disk/by-id/{{ item.id }}-part1'
+    state: '{{ item.mount_state|default(item.state) }}'
+  with_items: "{{ local_disks }}"
+  when:
+    - local_disks is defined
+  tags: ['disk']

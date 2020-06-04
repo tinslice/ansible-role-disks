@@ -1,0 +1,5 @@
+---
+
+- import_tasks: disk-info.yml
+- import_tasks: install-tools.yml
+- import_tasks: partition.yml

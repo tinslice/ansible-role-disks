@@ -1,0 +1,8 @@
+---
+
+- name: "Install parted"
+  package:
+    name: parted
+    state: present
+  when: local_disks is defined
+  tags: ['disk', 'pkgs']
