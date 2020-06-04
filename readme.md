@@ -9,7 +9,7 @@ Create requirements file `requirements.yml`
 ```yml
 ---
   - name: disk-volume
-    src: git@github.com:tinslice/ansible-role-disks.git
+    src: https://github.com/tinslice/ansible-role-disk-volume.git
 ```
 
 Install role
