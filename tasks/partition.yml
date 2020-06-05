@@ -12,6 +12,27 @@
   when: 
     - local_disks is defined
 
+- name: "Get partition id"
+  no_log: true
+  set_fact:
+    __local_disks: "{{ __local_disks | default([]) + [ item[0] | combine(disk_part) ] }}"
+  vars:
+    disk_part: "{ 'part' : '{{ item[1].partitions.keys()[0] }}' }"
+  with_nested: 
+    - "{{ local_disks }}"
+    - "{{ ansible_devices.values() }}"
+  when: 
+    - local_disks is defined
+    - item[0].disk
+    - item[1].partitions.keys() | length > 0
+    - item[0].disk in item[1].partitions.keys()[0]
+  
+- name: "Update local_disks"
+  set_fact: 
+    local_disks: "{{ __local_disks }}"
+  when:
+    - __local_disks is defined
+
 - name: "Create filesystem on the first partition"
   filesystem:
     dev: '/dev/{{ item.part | default(item.disk + "p1") }}'
