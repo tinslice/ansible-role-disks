@@ -78,7 +78,7 @@
     - local_disks is defined
   tags: ['disk']
 
-- name: "Mount disk by id"
+- name: "Mount disk by device id"
   mount:
     name: '{{ item.mount }}'
     fstype: '{{ item.fstype | default("ext4") }}'
@@ -89,7 +89,6 @@
   with_items: "{{ local_disks }}"
   when:
     - local_disks is defined
-    - item.mount_mode
     - item.mount_mode | default('by-id') == 'by-id'
   tags: ['disk']
   
@@ -107,6 +106,6 @@
   when:
     - local_disks is defined
     - disk_blkid is defined
-    - item.mount_mode is defined
-    - item.mount_mode == 'uuid'
+    - item[0].mount_mode is defined
+    - item[0].mount_mode == "uuid"
   tags: ['disk']
