@@ -2,6 +2,25 @@
 
 Ansible role for managing disk volumes
 
+Role configuration:
+
+- `disk-volumes`
+
+  - `name` [required] disk name
+  - `mount` [required] mount location
+  - `state` [required] disk state. Values: [ 'present', 'absent' ]
+  - `unit` [optional] default unit used by parted command ( defaults to 'KiB' )
+  - `fstype` [optional] file system type (defaults to 'ext4'). Values: [ 'aix', 'amiga', 'bsd', 'dvh', 'gpt', 'loop', 'mac', 'msdos', 'pc98', 'sun' ]
+  - `force` [optional] force creation of new filesystem on devices that already has filesystem (defaults to false)
+  - `resizefs` [optional] if size differ, grow the filesystem into the space (defaults to true)
+  - `fsopts` [optional] list of options for mkfs
+  - `disable_periodic_fsck` [optional] enable periodic fsck check (defaults to false)
+  - `user` [optional] Owner of the mount location (defaults to 'root')
+  - `group` [optional] Group owner of the mount location (defaults to 'root')
+  - `mount_state` [optional] mount state (defaults to the same value as `state`). Values: [ 'absent', 'mounted', 'present', 'unmounted' ]
+  - `mount_options` [optional] mount options (defaults to 'defaults,nofail')
+  - `mount_mode` [optional] mount mode (defaults to 'by-id'). Values: [ 'by-id', 'uuid' ]
+
 ## Usage example
 
 Create requirements file `requirements.yml`
@@ -15,7 +34,7 @@ Create requirements file `requirements.yml`
 Install role
 
 ```bash
-ansible-galaxy install -f -r local-requirements.yml -p roles/
+ansible-galaxy install -f -r requirements.yml -p roles/
 ```
 
 Create playbook file `playbook.yml`
@@ -24,21 +43,14 @@ Create playbook file `playbook.yml`
 ---
 - hosts: "{{ target_host }}"
   vars:
-    cloud_provider: gcp # cloud provider (defaults to 'gcp'). For now only 'gcp' support is implemented 
     disk-volumes:
-      - name: mydisk                   # disk name
-        mount: /mnt/diskmount          # mount location
-        state: present                 # disk state                        | possible values: [ 'present', 'absent' ]
-        unit: KiB                      # default unit used by parted command (default 'KiB')
-        fstype: ext4                   # file system type (default 'ext4') | possible values: [ 'aix', 'amiga', 'bsd', 'dvh', 'gpt', 'loop', 'mac', 'msdos', 'pc98', 'sun' ]
-        force: false                   # create new filesystem on devices that already has filesystem (default false)
-        resizefs: true                 # if size differ, grow the filesystem into the space (default true)
-        fsopts: []                     # list options for mkfs (default omit)
-        disable_periodic_fsck: false   # enable periodic fsck check (default false)
-        user: root                     # mount location user (default 'root')
-        group: syslog                  # mount location group (default 'root')
-        mount_state: mounted           # mount state (default item.state)  | possible values: [ 'absent', 'mounted', 'present', 'unmounted' ]
-        mount_options: defaults,nofail # mount options (default 'defaults,nofail') 
+      - name: mydisk 
+        mount: /mnt/diskmount 
+        state: present 
+        fstype: ext4 
+        resizefs: true  
+        mount_state: mounted 
+        mount_options: defaults,nofail  
   become: yes
     roles:
       - disk-volume

@@ -35,7 +35,7 @@
     - item.disable_periodic_fsck | default(false) | bool
   tags: ['disk']
 
-- name: "Ensure the mount directory exists"
+- name: "Create mount directory"
   file:
     path: '{{ item.mount }}'
     owner: '{{ item.user | default("root") }}'
@@ -47,7 +47,17 @@
     - item.state == 'present'
   tags: ['disk']
 
-- name: "Mount disk"
+- name: "Get partition UUID"
+  command: blkid -s UUID -o value {{ item.part | default(item.disk + "1") }}
+  register: disk_blkid
+  with_items: "{{ local_disks }}"
+  changed_when: False
+  check_mode: no
+  when: 
+    - local_disks is defined
+  tags: ['disk']
+
+- name: "Mount disk by id"
   mount:
     name: '{{ item.mount }}'
     fstype: '{{ item.fstype | default("ext4") }}'
@@ -58,4 +68,24 @@
   with_items: "{{ local_disks }}"
   when:
     - local_disks is defined
+    - item.mount_mode
+    - item.mount_mode | default('by-id') == 'by-id'
+  tags: ['disk']
+  
+- name: "Mount disk by UUID"
+  mount:
+    name: '{{ item[0].mount }}'
+    fstype: '{{ item[0].fstype | default("ext4") }}'
+    opts: '{{ item[0].mount_options | default("defaults,nofail") }}'
+    passno: '0'
+    src: 'UUID={{ item[1].stdout }}'
+    state: '{{ item[0].mount_state | default(item[0].state) }}'
+  with_together:
+    - "{{ local_disks }}"
+    - "{{ disk_blkid.results }}"
+  when:
+    - local_disks is defined
+    - disk_blkid is defined
+    - item.mount_mode is defined
+    - item.mount_mode == 'uuid'
   tags: ['disk']
