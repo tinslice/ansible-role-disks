@@ -1,2 +1,2 @@
 cloud_provider: gcp
-disks: {}
+disk_volumes: {}
