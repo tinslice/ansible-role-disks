@@ -69,7 +69,7 @@
   tags: ['disk']
 
 - name: "Get partition UUID"
-  command: blkid -s UUID -o value {{ item.part | default(item.disk + "1") }}
+  command: blkid -s UUID -o value /dev/{{ item.part | default(item.disk + "1") }}
   register: disk_blkid
   with_items: "{{ local_disks }}"
   changed_when: False
