@@ -14,7 +14,7 @@
 
 - name: "Create filesystem on the first partition"
   filesystem:
-    dev: '/dev/{{ item.part | default(item.disk + "1") }}'
+    dev: '/dev/{{ item.part | default(item.disk + "p1") }}'
     force: '{{ item.force | default(omit) }}'
     fstype: '{{ item.fstype | default("ext4") }}'
     opts: '{{ item.fsopts | default(omit) }}'
@@ -26,7 +26,7 @@
   tags: ['disk']
 
 - name: "Disable periodic fsck on ext3 or ext4 formatted disks"
-  shell: tune2fs -c0 -i0 {{ item.part | default(item.disk + "1") }}
+  shell: tune2fs -c0 -i0 /dev/{{ item.part | default(item.disk + "p1") }}
   with_items: "{{ local_disks }}"
   when: 
     - local_disks is defined
@@ -48,7 +48,7 @@
   tags: ['disk']
 
 - name: "Get partition UUID"
-  command: blkid -s UUID -o value {{ item.part | default(item.disk + "1") }}
+  command: blkid -s UUID -o value {{ item.part | default(item.disk + "p1") }}
   register: disk_blkid
   with_items: "{{ local_disks }}"
   changed_when: False
