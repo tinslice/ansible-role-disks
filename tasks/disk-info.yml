@@ -16,5 +16,5 @@
     - "{{ disk_volumes }}"
     - "{{ __disk_config }}"
   when:
-    - item[0].name in item[1].id
+    - item[0].disk == item[1].disk or item[0].name in item[1].id 
   tags: ['disk']

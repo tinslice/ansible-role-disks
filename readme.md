@@ -6,9 +6,10 @@ Role configuration:
 
 - `disk_volumes`
 
-  - `name` [required] disk name
+  - `name` [required] used to identify the disk id (eg. if disk id is 'google-disk-2' then we can use 'disk-2' as name)
   - `mount` [required] mount location
   - `state` [required] disk state. Values: [ 'present', 'absent' ]
+  - `disk` [optional] identify the disk to be managed by attached device instead of name `name`  (eg. sdb, sdc, nvme1n2, nvme1n2, ... )
   - `unit` [optional] default unit used by parted command ( defaults to 'KiB' )
   - `fstype` [optional] file system type (defaults to 'ext4'). Values: [ 'aix', 'amiga', 'bsd', 'dvh', 'gpt', 'loop', 'mac', 'msdos', 'pc98', 'sun' ]
   - `force` [optional] force creation of new filesystem on devices that already has filesystem (defaults to false)
