@@ -13,8 +13,9 @@
     local_disks: "{{ local_disks|default([]) + [ item[0] | combine(item[1]) ] }}"
   no_log: true
   with_nested: 
-    - "{{ disk-volumes }}"
+    - "{{ disk_volumes }}"
     - "{{ __disk_config }}"
   when:
+    - disk_volumes is defined
     - item[0].name in item[1].id
   tags: ['disk']

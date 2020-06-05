@@ -4,7 +4,7 @@ Ansible role for managing disk volumes
 
 Role configuration:
 
-- `disk-volumes`
+- `disk_volumes`
 
   - `name` [required] disk name
   - `mount` [required] mount location
