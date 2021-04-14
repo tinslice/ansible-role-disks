@@ -1,5 +1,5 @@
 galaxy_info:
   author: Catalin Manolescu
-  description: Manage disk volumes
+  description: Manage disks on linux hosts
   company: Tin Slice
   license: MIT

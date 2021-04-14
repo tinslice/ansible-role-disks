@@ -1,10 +1,10 @@
-# ansible-role-disk-volume
+# ansible-role-disks
 
-Ansible role for managing disk volumes
+Ansible role for managing disks on linux hosts
 
 Role configuration:
 
-- `disk_volumes`
+- `disks`
 
   - `name` [required] used to identify the disk id (eg. if disk id is 'google-disk-2' then we can use 'disk-2' as name)
   - `mount` [required] mount location
@@ -28,8 +28,8 @@ Create requirements file `requirements.yml`
 
 ```yml
 ---
-  - name: disk-volume
-    src: https://github.com/tinslice/ansible-role-disk-volume.git
+  - name: disks
+    src: https://github.com/tinslice/ansible-role-disks.git
 ```
 
 Install role
@@ -44,23 +44,23 @@ Create playbook file `playbook.yml`
 ---
 - hosts: "{{ target_host }}"
   vars:
-    disk-volumes:
-      - name: mydisk 
-        mount: /mnt/diskmount 
-        state: present 
-        fstype: ext4 
-        resizefs: true  
-        mount_state: mounted 
-        mount_options: defaults,nofail  
+    disks:
+      - name: mydisk
+        mount: /mnt/diskmount
+        state: present
+        fstype: ext4
+        resizefs: true
+        mount_state: mounted
+        mount_options: defaults,nofail
   become: yes
     roles:
-      - disk-volume
+      - disks
 ```
 
 Run playbook
 
 ```bash
-ansible-playbook playbook.yml -i <inventory> -e target_host=<target-host> 
+ansible-playbook playbook.yml -i <inventory> -e target_host=<target-host>
 ```
 
 Resources:

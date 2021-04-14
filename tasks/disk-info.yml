@@ -2,7 +2,7 @@
 
 - name: collect hardware
   no_log: true
-  set_fact: 
+  set_fact:
     __disk_config: "{{ __disk_config|default([]) + [{'disk': item.key, 'id': item.value.links.ids[0]}] }}"
   with_dict: "{{ ansible_devices }}"
   when: item.value.links.ids | length > 0
@@ -12,8 +12,8 @@
   set_fact:
     local_disks: "{{ local_disks|default([]) + [ item[0] | combine(item[1]) ] }}"
   no_log: true
-  with_nested: 
-    - "{{ disk_volumes }}"
+  with_nested:
+    - "{{ disks }}"
     - "{{ __disk_config }}"
   when:
     - (item[0].disk is defined and item[0].disk == item[1].disk) or (item[0].name is defined and item[0].name in item[1].id)
