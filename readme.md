@@ -53,8 +53,8 @@ Create playbook file `playbook.yml`
         mount_state: mounted
         mount_options: defaults,nofail
   become: yes
-    roles:
-      - disks
+  roles:
+    - disks
 ```
 
 Run playbook
