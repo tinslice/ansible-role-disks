@@ -3,3 +3,5 @@ galaxy_info:
   description: Manage disks on linux hosts
   company: Tin Slice
   license: MIT
+
+dependencies: []
