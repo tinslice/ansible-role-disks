@@ -9,26 +9,26 @@
     label: "{{ item.partition_table | default('gpt') }}"
     state: "{{ item.state | default('present') }}"
   with_items: "{{ local_disks }}"
-  when: 
+  when:
     - local_disks is defined
 
 - name: "Get partition id"
-  no_log: true
+  no_log: false
   set_fact:
     __local_disks: "{{ __local_disks | default([]) + [ item[0] | combine(disk_part) ] }}"
   vars:
-    disk_part: "{ 'part' : '{{ item[1].partitions.keys()[0] }}' }"
-  with_nested: 
+    disk_part: "{ 'part' : '{{ (item[1].partitions.keys() | list)[0] }}' }"
+  with_nested:
     - "{{ local_disks }}"
-    - "{{ ansible_devices.values() }}"
-  when: 
+    - "{{ ansible_devices.values() | list }}"
+  when:
     - local_disks is defined
     - item[0].disk
-    - item[1].partitions.keys() | length > 0
-    - item[0].disk in item[1].partitions.keys()[0]
-  
+    - item[1].partitions.keys() | list | length > 0
+    - item[0].disk in (item[1].partitions.keys() | list)[0]
+
 - name: "Update local_disks"
-  set_fact: 
+  set_fact:
     local_disks: "{{ __local_disks }}"
   when:
     - __local_disks is defined
@@ -41,17 +41,17 @@
     opts: '{{ item.fsopts | default(omit) }}'
     resizefs: '{{ item.resizefs | default(true) | bool }}'
   with_items: "{{ local_disks }}"
-  when: 
+  when:
     - local_disks is defined
-    - item.state == 'present'
+    - item.state | default ('present') == 'present'
   tags: ['disk']
 
 - name: "Disable periodic fsck on ext3 or ext4 formatted disks"
   shell: tune2fs -c0 -i0 /dev/{{ item.part | default(item.disk + "1") }}
   with_items: "{{ local_disks }}"
-  when: 
+  when:
     - local_disks is defined
-    - item.state == 'present' 
+    - item.state | default ('present') == 'present'
     - item.fstype | default("ext4") == 'ext4' or item.fstype == 'ext3'
     - item.disable_periodic_fsck | default(false) | bool
   tags: ['disk']
@@ -65,7 +65,7 @@
   with_items: "{{ local_disks }}"
   when:
     - local_disks is defined
-    - item.state == 'present'
+    - item.state | default ('present') == 'present'
   tags: ['disk']
 
 - name: "Get partition UUID"
@@ -74,7 +74,7 @@
   with_items: "{{ local_disks }}"
   changed_when: False
   check_mode: no
-  when: 
+  when:
     - local_disks is defined
   tags: ['disk']
 
@@ -91,7 +91,7 @@
     - local_disks is defined
     - item.mount_mode | default('by-id') == 'by-id'
   tags: ['disk']
-  
+
 - name: "Mount disk by UUID"
   mount:
     name: '{{ item[0].mount }}'
